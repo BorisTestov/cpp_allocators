@@ -19,5 +19,5 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
-  - curl -T $GENERATED_DEB_NAME-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uboristestov:$BINTRAY_API_KEY "https://api.bintray.com/content/boristestov/$REPOSITORY_NAME/$GENERATED_DEB_NAME/$TRAVIS_BUILD_NUMBER/$PROJECT_NAME-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
+  - curl -T $GENERATED_DEB_NAME-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uboristestov:$BINTRAY_API_KEY "https://api.bintray.com/content/boristestov/$REPOSITORY_NAME/$PACKAGE_NAME/$TRAVIS_BUILD_NUMBER/$GENERATED_DEB_NAME-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
 
