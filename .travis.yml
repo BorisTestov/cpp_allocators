@@ -1,7 +1,7 @@
 env:
-- REPOSITORY_NAME="HW_2"
-- PACKAGE_NAME="hw_2"
-- PROJECT_NAME="ip_filter"
+- REPOSITORY_NAME="cpp_allocators"
+- PACKAGE_NAME="main"
+- PROJECT_NAME="allocators"
 language: cpp
 dist: bionic
 before_script:
