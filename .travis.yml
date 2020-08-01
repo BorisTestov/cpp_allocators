@@ -1,7 +1,5 @@
 env:
-- REPOSITORY_NAME=cpp_allocators
-- PACKAGE_NAME=main
-- GENERATED_DEB_NAME=memory_allocator
+- REPOSITORY_NAME=cpp_allocators PACKAGE_NAME=main GENERATED_DEB_NAME=memory_allocator
 language: cpp
 dist: bionic
 before_script:
