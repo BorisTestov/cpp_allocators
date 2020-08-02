@@ -14,7 +14,7 @@ foreach(TARGET ${EXECUTABLES_LIST})
     # Set target properties
     set_target_properties(${TARGET} PROPERTIES ${TARGET_PROPERTIES})
     # Link libraries
-    target_link_libraries(${TARGET} PRIVATE ${LIBRARIES_LIST} Qt5::Widgets)
+    target_link_libraries(${TARGET} PRIVATE ${LIBRARIES_LIST})
     # Set compile options
     target_compile_options(${TARGET} PRIVATE ${COMPILE_OPTIONS})
 endforeach()

@@ -1,3 +1,6 @@
+# Configure file with current app version
+configure_file(${INCLUDE_DIR}/version.h.in ${INCLUDE_DIR}/version.h)
+
 # Set libraries names
 set(version_library "version")
 set(allocator_library "allocator")
@@ -5,7 +8,6 @@ set(allocator_library "allocator")
 # Add libraries
 add_library(${version_library} ${SRC_DIR}/version.cpp)
 add_library(${allocator_library} ${SRC_DIR}/allocator.cpp)
-add_dependencies(${allocator_library} Qt5::Widgets)
 
 # Create list with libraries names
 set(LIBRARIES_LIST ${version_library} ${allocator_library})
