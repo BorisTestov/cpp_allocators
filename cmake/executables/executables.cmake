@@ -1,12 +1,26 @@
 # Set executables names
-set(memory_allocator_executable "memory_allocator")
-
-# Add executables
-add_executable(${memory_allocator_executable}
-                ${SRC_DIR}/main.cpp)
+set(main "memory_allocator")
 
 # Create list with executables names
-set(EXECUTABLES_LIST ${memory_allocator_executable})
+set(EXECUTABLES_LIST ${main})
+
+# Set sources
+set(SOURCES
+        ${SRC_DIR}/main.cpp
+        ${SRC_DIR}/allocator.cpp
+        ${SRC_DIR}/container.cpp
+
+)
+
+# Set headers
+set(HEADERS
+        ${INCLUDE_DIR}/factorial.h
+        ${INCLUDE_DIR}/allocator.h
+        ${INCLUDE_DIR}/container.h
+)
+
+# Add executables
+add_executable(${main} ${SOURCES} ${HEADERS})
 
 foreach(TARGET ${EXECUTABLES_LIST})
     # Include directories

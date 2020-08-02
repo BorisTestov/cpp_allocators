@@ -3,14 +3,14 @@ find_package(Qt5 REQUIRED COMPONENTS Test)
 set(TESTS_INCLUDE_DIR ${INCLUDE_DIR}/tests)
 set(TESTS_SRC_DIR ${SRC_DIR}/tests)
 
-# Add tests names
-set(memory_allocator_test_executable "memory_allocator_test")
+# Add tests
+set(main_test "memory_allocator_test")
 
 # Add tests executables
-add_executable(${memory_allocator_test_executable} ${TESTS_SRC_DIR}/main_test.cpp)
+add_executable(${main_test} ${TESTS_SRC_DIR}/main_test.cpp ${TESTS_INCLUDE_DIR}/main_test.h)
 
 # Create list with tests names
-set(TESTS_LIST ${memory_allocator_test_executable})
+set(TESTS_LIST ${main_test})
 
 foreach(TARGET ${TESTS_LIST})
     # Set target properties
