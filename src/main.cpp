@@ -1,9 +1,16 @@
 #include "allocator.h"
+#include "container.h"
 #include "factorial.h"
 #include "version.h"
 #include <iostream>
 #include <map>
 #include <vector>
+
+/* TODO
+ * beautify code
+ * beautify output
+ * write more tests
+ */
 
 int main() {
   std::cout << "Current version: " << version() << std::endl;
@@ -23,5 +30,18 @@ int main() {
     v.emplace_back(factorial(i));
     std::cout << std::endl;
   }
+
+  std::cout << std::endl;
+  vector_container<int> container_vector;
+  for (int i = 0; i < 10; i++) {
+    container_vector.push_back(i);
+  }
+
+  auto container_vector_allocator =
+      vector_container<int, logging_allocator<int, 10>>{};
+  for (int i = 0; i < 10; i++) {
+    container_vector_allocator.push_back(i);
+  }
+
   return 0;
 }

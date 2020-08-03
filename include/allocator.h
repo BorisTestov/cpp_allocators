@@ -28,7 +28,7 @@ public:
   /**
    * @brief logging_allocator
    * Переопределение конструктора копирования
-   * Обчно нужен, если аллокатор имеет внутренние состояния
+   * Обычно нужен, если аллокатор имеет внутренние состояния
    */
   logging_allocator(const logging_allocator<U, copy_chunk_size> &) {}
 

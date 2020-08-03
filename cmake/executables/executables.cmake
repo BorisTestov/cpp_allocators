@@ -7,9 +7,6 @@ set(EXECUTABLES_LIST ${main})
 # Set sources
 set(SOURCES
         ${SRC_DIR}/main.cpp
-        ${SRC_DIR}/allocator.cpp
-        ${SRC_DIR}/container.cpp
-
 )
 
 # Set headers
