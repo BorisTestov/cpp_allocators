@@ -1,7 +1,7 @@
 #include <iostream>
-//#define USE_PRETTY
 
-template <typename T, std::size_t chunk_size = 1> class logging_allocator {
+template <typename T, std::size_t max_allocated_chunks = 1>
+class logging_allocator {
 public:
   // Define some basic member types
   // https://en.cppreference.com/w/cpp/memory/allocator
@@ -18,7 +18,7 @@ public:
    * если аллокатору необходимо будет аллоцировать объекты, отличные от типа T
    */
   struct rebind {
-    using other = logging_allocator<U, chunk_size>;
+    using other = logging_allocator<U, max_allocated_chunks>;
   };
 
   logging_allocator() = default;
@@ -40,19 +40,27 @@ public:
    * @return ссылка на начальный элемент (типа T) выделенного блока памяти
    */
   pointer allocate(std::size_t n) {
-    std::cout << "allocate: " << n << std::endl;
     if (!_memory_pool) {
-      _memory_pool = reinterpret_cast<pointer>(malloc(chunk_size * sizeof(T)));
+      _memory_pool =
+          reinterpret_cast<pointer>(malloc(max_allocated_chunks * sizeof(T)));
     }
     if (!_memory_pool) {
+      std::cerr << "bad allocation at " << __PRETTY_FUNCTION__ << std::endl;
       throw std::bad_alloc();
     }
-    pointer chunk_pointer = _memory_pool + _chunks_counter;
+    pointer chunk_pointer = _memory_pool + _chunks_counter * sizeof(T) * n;
     _chunks_counter += n;
     return chunk_pointer;
   }
 
-  size_t max_size() const noexcept { return chunk_size; }
+  /**
+   * @brief max_size
+   * Определяет, какое для какого максимального количества объектов можно
+   * аллоцировать память
+   * @return Максимально допустимое количество объектов, используемых для
+   * аллокации
+   */
+  size_t max_size() const noexcept { return max_allocated_chunks; }
 
   /**
    * @brief deallocate
@@ -62,13 +70,14 @@ public:
    * же значение, что и в allocate
    */
   void deallocate(pointer p, std::size_t n) {
-    if (!p)
+    if (!p) {
       return;
+    }
     _chunks_counter -= n;
-    if (_chunks_counter != 0) // Wait untill all chunks were gone
+    if (_chunks_counter != 0) {
       return;
+    }
     free(_memory_pool);
-    std::cout << "Memory freed" << std::endl;
     _memory_pool = nullptr;
   }
 
@@ -80,11 +89,6 @@ public:
    * @param args - аргументы, передаваемые в конструктор
    */
   void construct(U *p, Args &&... args) {
-#ifndef USE_PRETTY
-    std::cout << "construct" << std::endl;
-#else
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-#endif
     new (p) U(std::forward<Args>(args)...);
   }
 
@@ -95,13 +99,9 @@ public:
    * @param p - Ссылка, указывающая на объект для уничтожения
    */
   void destroy(U *p) {
-#ifndef USE_PRETTY
-    std::cout << "destroy" << std::endl;
-#else
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-#endif
     if (!p) {
-      throw std::bad_alloc(); // Double destruction
+      std::cerr << "bad allocation at " << __PRETTY_FUNCTION__ << std::endl;
+      throw std::bad_alloc();
     }
     p->~U();
   }

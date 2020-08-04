@@ -22,13 +22,13 @@ public:
     }
     _container_data = _container_allocator.allocate(_container_capacity);
     {
-      // move olda data to new memory
+      // move old data to new memory
       T *old_data_pointer = old_container_data;
       T *new_data_pointer = _container_data;
       for (size_t i = 0; i < _container_size; i++) {
         _container_allocator.construct(new_data_pointer, *old_data_pointer);
-        new_data_pointer++;
-        old_data_pointer++;
+        ++new_data_pointer;
+        ++old_data_pointer;
       }
     }
     {
