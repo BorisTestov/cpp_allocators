@@ -25,5 +25,5 @@ endforeach()
 
 enable_testing()
 foreach(TESTNAME ${TESTS_LIST})
-    add_test(${TESTNAME} ${TESTNAME})
+    add_test(${TESTNAME} ${BUILD_DIR}/${TESTNAME})
 endforeach()
