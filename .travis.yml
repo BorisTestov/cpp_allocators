@@ -11,7 +11,7 @@ script:
 - cd build
 - cmake ../cmake
 - cmake --build .
-- cmake --build . --target test
+- make test
 - cmake --build . --target package
 deploy:
   provider: script
