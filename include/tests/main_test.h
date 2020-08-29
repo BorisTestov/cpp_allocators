@@ -10,7 +10,7 @@ class TestMain : public QObject {
 private slots:
   void TestVersion();
   void TestFactorial();
-  //  void TestAllocator();
+  void TestAllocator();
   void TestContainer();
 };
 

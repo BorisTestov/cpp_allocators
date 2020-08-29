@@ -1,4 +1,6 @@
 #include <iostream>
+#include <list>
+#include <algorithm>
 
 template <typename T, std::size_t max_allocated_chunks = 1>
 class logging_allocator {
@@ -11,6 +13,24 @@ public:
   using reference = T &;
   using const_reference = const T &;
 
+  struct memory_chunk
+  {
+      pointer _data = static_cast<pointer>(::operator new(max_allocated_chunks * sizeof(value_type)));
+      pointer _last_free = _data;
+      size_t used = 0;
+      memory_chunk()
+      {
+          if (not _data)
+          {
+              std::cerr << "bad allocation at " << __PRETTY_FUNCTION__ << std::endl;
+              throw std::bad_alloc();
+          }
+      }
+      ~memory_chunk()
+      {
+          ::operator delete(_data);
+      }
+  };
   template <typename U>
   /**
    * @brief The rebind struct
@@ -40,22 +60,33 @@ public:
    * @return ссылка на начальный элемент (типа T) выделенного блока памяти
    */
   pointer allocate(std::size_t n) {
-    if (!_memory_pool) {
-      _memory_pool =
-          reinterpret_cast<pointer>(malloc(max_allocated_chunks * sizeof(T)));
+    if (n > max_allocated_chunks)
+    {
+        std::cerr << "bad allocation at " << __PRETTY_FUNCTION__ << std::endl;
+        throw std::bad_alloc();
     }
-    if (!_memory_pool) {
-      std::cerr << "bad allocation at " << __PRETTY_FUNCTION__ << std::endl;
-      throw std::bad_alloc();
+    for(memory_chunk& c:_memory_pool)
+    {
+        if ((unsigned)(c._data + max_allocated_chunks - c._last_free) >= n)
+        {
+            return add_to_chunk(c, n);
+        }
     }
-    pointer chunk_pointer = _memory_pool + _chunks_counter * sizeof(T) * n;
-    _chunks_counter += n;
-    return chunk_pointer;
+    memory_chunk& c = _memory_pool.emplace_back();
+    return add_to_chunk(c, n);
+  }
+
+  pointer add_to_chunk(memory_chunk& chunk, std::size_t n)
+  {
+      pointer result = chunk._last_free;
+      chunk._last_free += n;
+      chunk.used += n;
+      return result;
   }
 
   /**
    * @brief max_size
-   * Определяет, какое для какого максимального количества объектов можно
+   * Определяет, для какого максимального количества объектов можно
    * аллоцировать память
    * @return Максимально допустимое количество объектов, используемых для
    * аллокации
@@ -70,15 +101,20 @@ public:
    * же значение, что и в allocate
    */
   void deallocate(pointer p, std::size_t n) {
-    if (!p) {
-      return;
-    }
-    _chunks_counter -= n;
-    if (_chunks_counter != 0) {
-      return;
-    }
-    free(_memory_pool);
-    _memory_pool = nullptr;
+      auto dealloated_chunk = find_if(_memory_pool.begin(), _memory_pool.end(),
+                                   [p](const memory_chunk& c) {
+          return (p >= c._data and p <= (c._data + max_allocated_chunks));
+      });
+      if (dealloated_chunk == _memory_pool.end())
+      {
+          std::cerr << "bad allocation at " << __PRETTY_FUNCTION__ << std::endl;
+          throw std::bad_alloc();
+      }
+      dealloated_chunk->used -= n;
+      if (dealloated_chunk->used == 0)
+      {
+          _memory_pool.erase(dealloated_chunk);
+      }
   }
 
   template <typename U, typename... Args>
@@ -107,6 +143,5 @@ public:
   }
 
 private:
-  pointer _memory_pool = nullptr;
-  size_t _chunks_counter = 0;
+  std::list<memory_chunk> _memory_pool;
 };
